@@ -83,8 +83,21 @@ public class UrlService {
      }
 
      public VisualizarEstatisticasResponse visualizarEstatisticas(String shortUrl) {
-         //TODO - Lógica para visualizar estatísticas de uma URL encurtada
-          return null;
+          UrlEntity urlEntity = repository.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new RuntimeException("URL encurtada não encontrada"));
+
+          return new VisualizarEstatisticasResponse(
+                  urlEntity.getAccessCount(),
+                  calcularMediaAcessosPorDia(urlEntity.getCreatedAt(), urlEntity.getAccessCount())
+          );
+     }
+
+     private Double calcularMediaAcessosPorDia(LocalDateTime createdAt, Long accessCount) {
+            long daysSinceCreation = LocalDateTime.now().toLocalDate().toEpochDay() - createdAt.toLocalDate().toEpochDay();
+            if (daysSinceCreation == 0) {
+                return (double) accessCount;
+            }
+            return (double) accessCount / daysSinceCreation;
      }
 
 }
