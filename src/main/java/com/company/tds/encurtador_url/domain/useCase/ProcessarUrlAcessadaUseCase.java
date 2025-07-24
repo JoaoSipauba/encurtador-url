@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class ProcessaUrlAcessadaUseCase {
+public class ProcessarUrlAcessadaUseCase {
 
     private final UrlRepository urlRepository;
 

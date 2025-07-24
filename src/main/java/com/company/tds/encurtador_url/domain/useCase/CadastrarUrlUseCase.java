@@ -8,6 +8,7 @@ import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
 import java.security.MessageDigest;
@@ -19,7 +20,7 @@ import java.util.Random;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class CadastraUrlUseCase {
+public class CadastrarUrlUseCase {
      private static final int SHORT_URL_LENGTH = 6;
      private static final int MAX_ATTEMPTS = 5;
 
@@ -28,6 +29,7 @@ public class CadastraUrlUseCase {
      @Value("${app.base-url:http://localhost:8080}")
      private String baseUrl;
 
+     @CacheEvict(value = "urlCache", key = "#result.shortUrl")
      public CadastrarUrlResponse executar(CadastrarUrlRequest request) {
           String shortUrl = gerarShortUrl(request.originalUrl());
           UrlEntity entity = preencherEntity(shortUrl, request.originalUrl());

@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-public class VisualizaEstatisticasUseCase {
+public class VisualizarEstatisticasUseCase {
 
     private final UrlRepository repository;
 
