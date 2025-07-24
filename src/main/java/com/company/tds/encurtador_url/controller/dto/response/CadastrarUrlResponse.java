@@ -1,4 +1,4 @@
-package com.company.tds.encurtador_url.dto.response;
+package com.company.tds.encurtador_url.controller.dto.response;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

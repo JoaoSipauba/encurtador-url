@@ -1,8 +1,8 @@
 package com.company.tds.encurtador_url.controller;
 
-import com.company.tds.encurtador_url.dto.request.CadastrarUrlRequest;
-import com.company.tds.encurtador_url.dto.response.CadastrarUrlResponse;
-import com.company.tds.encurtador_url.dto.response.VisualizarEstatisticasResponse;
+import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest;
+import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
+import com.company.tds.encurtador_url.controller.dto.response.VisualizarEstatisticasResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Tag(name = "URL Encurtador", description = "Operações relacionadas ao encurtamento de URLs")
-@RequestMapping("/v1/urls")
+@RequestMapping
 @Validated
 public interface UrlController {
     @Operation(summary = "Cadastra uma nova URL encurtada")

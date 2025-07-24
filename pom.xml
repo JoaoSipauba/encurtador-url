@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.company.tds</groupId>
 	<artifactId>encurtador-url</artifactId>
-	<version>0.0.4</version>
+	<version>0.1.0</version>
 	<name>encurtador-url</name>
 	<description>API backend para serviço de encurtamento de URLs - Desafio TDS Company</description>
 	<url/>
