@@ -4,11 +4,13 @@ import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest
 import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
 import com.company.tds.encurtador_url.controller.dto.response.VisualizarEstatisticasResponse;
 import com.company.tds.encurtador_url.domain.entity.UrlEntity;
+import com.company.tds.encurtador_url.domain.event.publisher.UrlEventPublisher;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -20,7 +22,9 @@ import java.util.Random;
 public class UrlService {
      private static final int SHORT_URL_LENGTH = 6;
      private static final int MAX_ATTEMPTS = 5;
+
      private final UrlRepository repository;
+     private final UrlEventPublisher urlEventPublisher;
 
      @Value("${app.base-url:http://localhost:8080}")
      private String baseUrl;
@@ -78,8 +82,12 @@ public class UrlService {
           return baseUrl + "/" + shortUrl;
      }
 
-     public void acessarUrl(String shortUrl) {
-         //TODO - Lógica para acessar uma URL encurtada
+     public URI acessarUrl(String shortUrl) {
+          UrlEntity urlEntity = repository.findByShortUrl(shortUrl)
+                .orElseThrow(() -> new RuntimeException("URL encurtada não encontrada"));
+
+          urlEventPublisher.publishUrlAccessedEvent(shortUrl);
+          return URI.create(urlEntity.getOriginalUrl());
      }
 
      public VisualizarEstatisticasResponse visualizarEstatisticas(String shortUrl) {

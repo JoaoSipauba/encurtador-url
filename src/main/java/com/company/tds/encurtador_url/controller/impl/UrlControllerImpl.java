@@ -25,8 +25,8 @@ public class UrlControllerImpl implements UrlController {
 
     @Override
     public ResponseEntity<Void> acessarUrl(String shortUrl) {
-        service.acessarUrl(shortUrl);
-        return ResponseEntity.status(FOUND).build();
+        var response = service.acessarUrl(shortUrl);
+        return ResponseEntity.status(FOUND).location(response).build();
     }
 
     @Override
