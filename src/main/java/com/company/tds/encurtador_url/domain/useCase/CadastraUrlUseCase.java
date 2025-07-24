@@ -2,9 +2,11 @@ package com.company.tds.encurtador_url.domain.useCase;
 
 import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest;
 import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
+import com.company.tds.encurtador_url.controller.exception.ErroInternoException;
 import com.company.tds.encurtador_url.domain.entity.UrlEntity;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -14,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.Base64;
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CadastraUrlUseCase {
@@ -30,6 +33,8 @@ public class CadastraUrlUseCase {
           UrlEntity entity = preencherEntity(shortUrl, request.originalUrl());
 
           entity = repository.save(entity);
+
+          log.info("URL encurtada criada: {} -> {}", request.originalUrl(), entity.getShortUrl());
           return convert(entity);
      }
 
@@ -57,7 +62,7 @@ public class CadastraUrlUseCase {
                        .replaceAll("[+/=]", "") + new Random().nextInt(10);
                attempts++;
                if (attempts > MAX_ATTEMPTS) {
-                    throw new RuntimeException("Falha ao gerar URL encurtada única após " + MAX_ATTEMPTS + " tentativas");
+                    throw new ErroInternoException("Falha ao gerar URL encurtada única após " + MAX_ATTEMPTS + " tentativas");
                }
           } while (repository.findByShortUrl(candidateShortUrl).isPresent());
 
@@ -70,7 +75,7 @@ public class CadastraUrlUseCase {
                byte[] hash = digest.digest(input.getBytes());
                return Base64.getUrlEncoder().encodeToString(hash);
           } catch (NoSuchAlgorithmException e) {
-               throw new RuntimeException("Erro ao gerar hash para a URL", e);
+               throw new ErroInternoException("Erro ao gerar hash para a URL", e);
           }
      }
 

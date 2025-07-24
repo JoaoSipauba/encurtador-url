@@ -1,5 +1,6 @@
 package com.company.tds.encurtador_url.domain.useCase;
 
+import com.company.tds.encurtador_url.controller.exception.RecursoNaoEncontradoException;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -12,7 +13,7 @@ public class ProcessaUrlAcessadaUseCase {
 
     public void executar(String shortUrl) {
         var urlEntity = urlRepository.findByShortUrl(shortUrl).orElseThrow(
-            () -> new IllegalArgumentException("URL encurtada não encontrada: " + shortUrl)
+            () -> new RecursoNaoEncontradoException("URL encurtada não encontrada: " + shortUrl)
         );
 
         urlEntity.setAccessCount(urlEntity.getAccessCount() + 1);
