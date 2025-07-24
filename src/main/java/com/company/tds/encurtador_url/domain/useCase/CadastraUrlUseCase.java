@@ -1,16 +1,13 @@
-package com.company.tds.encurtador_url.domain.service;
+package com.company.tds.encurtador_url.domain.useCase;
 
 import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest;
 import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
-import com.company.tds.encurtador_url.controller.dto.response.VisualizarEstatisticasResponse;
 import com.company.tds.encurtador_url.domain.entity.UrlEntity;
-import com.company.tds.encurtador_url.domain.event.publisher.UrlEventPublisher;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
@@ -19,17 +16,16 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
-public class UrlService {
+public class CadastraUrlUseCase {
      private static final int SHORT_URL_LENGTH = 6;
      private static final int MAX_ATTEMPTS = 5;
 
      private final UrlRepository repository;
-     private final UrlEventPublisher urlEventPublisher;
 
      @Value("${app.base-url:http://localhost:8080}")
      private String baseUrl;
 
-     public CadastrarUrlResponse cadastrarUrl(CadastrarUrlRequest request) {
+     public CadastrarUrlResponse executar(CadastrarUrlRequest request) {
           String shortUrl = gerarShortUrl(request.originalUrl());
           UrlEntity entity = preencherEntity(shortUrl, request.originalUrl());
 
@@ -80,32 +76,6 @@ public class UrlService {
 
      private String buildFullUrl(String shortUrl) {
           return baseUrl + "/" + shortUrl;
-     }
-
-     public URI acessarUrl(String shortUrl) {
-          UrlEntity urlEntity = repository.findByShortUrl(shortUrl)
-                .orElseThrow(() -> new RuntimeException("URL encurtada não encontrada"));
-
-          urlEventPublisher.publishUrlAccessedEvent(shortUrl);
-          return URI.create(urlEntity.getOriginalUrl());
-     }
-
-     public VisualizarEstatisticasResponse visualizarEstatisticas(String shortUrl) {
-          UrlEntity urlEntity = repository.findByShortUrl(shortUrl)
-                .orElseThrow(() -> new RuntimeException("URL encurtada não encontrada"));
-
-          return new VisualizarEstatisticasResponse(
-                  urlEntity.getAccessCount(),
-                  calcularMediaAcessosPorDia(urlEntity.getCreatedAt(), urlEntity.getAccessCount())
-          );
-     }
-
-     private Double calcularMediaAcessosPorDia(LocalDateTime createdAt, Long accessCount) {
-            long daysSinceCreation = LocalDateTime.now().toLocalDate().toEpochDay() - createdAt.toLocalDate().toEpochDay();
-            if (daysSinceCreation == 0) {
-                return (double) accessCount;
-            }
-            return (double) accessCount / daysSinceCreation;
      }
 
 }
