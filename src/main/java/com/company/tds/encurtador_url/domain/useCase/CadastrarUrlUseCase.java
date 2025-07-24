@@ -7,6 +7,7 @@ import com.company.tds.encurtador_url.domain.entity.UrlEntity;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
@@ -34,6 +35,8 @@ public class CadastrarUrlUseCase {
 
      @CacheEvict(value = "urlCache", key = "#result.shortUrl")
      public CadastrarUrlResponse executar(CadastrarUrlRequest request) {
+          validarUrl(request.originalUrl());
+
           String shortUrl = gerarShortUrl(request.originalUrl());
           UrlEntity entity = preencherEntity(shortUrl, request.originalUrl());
 
@@ -41,6 +44,13 @@ public class CadastrarUrlUseCase {
 
           log.info("URL encurtada criada: {} -> {}", request.originalUrl(), entity.getShortUrl());
           return convert(entity);
+     }
+
+     private void validarUrl(String originalUrl) {
+          UrlValidator validator = new UrlValidator();
+          if (!validator.isValid(originalUrl)) {
+               throw new IllegalArgumentException("URL original inválida: " + originalUrl);
+          }
      }
 
      private CadastrarUrlResponse convert(UrlEntity entity) {

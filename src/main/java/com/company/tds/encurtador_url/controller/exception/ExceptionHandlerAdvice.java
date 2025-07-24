@@ -38,6 +38,13 @@ public class ExceptionHandlerAdvice {
         return new ErrorResponse(HttpStatus.NOT_FOUND.value(), e.getMessage());
     }
 
+    @ExceptionHandler({IllegalArgumentException.class})
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    @JsonFormat
+    ErrorResponse illegalArgumentException(final IllegalArgumentException e) {
+        return new ErrorResponse(HttpStatus.BAD_REQUEST.value(), e.getMessage());
+    }
+
     @ExceptionHandler({HttpRequestMethodNotSupportedException.class})
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ErrorResponse methodNotSupportedException(HttpRequestMethodNotSupportedException e) {

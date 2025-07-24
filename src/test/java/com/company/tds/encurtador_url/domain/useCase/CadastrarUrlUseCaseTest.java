@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -68,5 +69,32 @@ class CadastrarUrlUseCaseTest {
         CadastrarUrlUseCase spyUseCase = spy(useCase);
 
         assertThrows(ErroInternoException.class, () -> spyUseCase.executar(request));
+    }
+
+    @Test
+    void deveRejeitarUrlsInvalidas() {
+        List<String> urlsInvalidas = List.of(
+                "www.google.com",
+                "google.com/teste",
+                "://site.com",
+                "http//site.com",
+                "http://",
+                "http:///pagina",
+                "http://.com",
+                "http://-dominio.com",
+                "http://999.999.999.999",
+                "http://256.256.256.256",
+                "http://meu site.com",
+                "http://exemplo.com/algum caminho",
+                "invalid_url",
+                "justtext",
+                "notaurl://blabla"
+        );
+
+        for (String url : urlsInvalidas) {
+            CadastrarUrlRequest request = new CadastrarUrlRequest(url);
+            assertThrows(IllegalArgumentException.class, () -> useCase.executar(request),
+                    "Deveria lançar exceção para URL inválida: " + url);
+        }
     }
 }
