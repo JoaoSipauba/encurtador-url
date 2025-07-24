@@ -6,6 +6,7 @@ import com.company.tds.encurtador_url.dto.response.VisualizarEstatisticasRespons
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,7 @@ public interface UrlController {
             schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = CadastrarUrlResponse.class)
     ))
     @PostMapping
-    ResponseEntity<CadastrarUrlResponse> cadastrarUrl(@RequestBody CadastrarUrlRequest request);
+    ResponseEntity<CadastrarUrlResponse> cadastrarUrl(@RequestBody @Valid CadastrarUrlRequest request);
 
     @Operation(summary = "Redireciona para a URL original")
     @ApiResponse(responseCode = "302", description = "Redirecionamento bem sucedido")
