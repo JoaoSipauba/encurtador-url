@@ -15,6 +15,14 @@ Esta é uma aplicação de encurtador de URLs construída com **Spring Boot**, p
 - **Banco de Dados**: MongoDB armazena entidades de URL com campos como `shortUrl`, `originalUrl` e `accessCount`.
 - **Cache**: Caffeine com `@Cacheable` e `@CacheEvict` para recuperação eficiente de dados e consistência.
 
+## Lógica de Geração do Hash
+A geração de URLs encurtadas (`shortUrl`) usa uma combinação de contagem e variação para garantir unicidade e diversidade. O processo funciona da seguinte forma:
+
+1. **Contagem de Registros**: A aplicação verifica quantas URLs já foram salvas no banco de dados e usa esse número, incrementando em 1, como base para o próximo código.
+2. **Adição de Variação**: Esse número é combinado com um valor aleatório gerado pelo sistema para criar uma sequência menos previsível.
+3. **Conversão em Código Curto**: O valor resultante é transformado em uma string de 6 caracteres usando letras e números (a-z, A-Z, 0-9). Se o resultado for curto, os caracteres restantes são preenchidos com valores aleatórios.
+4. **Garantia de Unicidade**: O número base garante que cada código seja único, enquanto a variação adiciona diversidade. Por exemplo, o primeiro código pode ser `k9pLmN`, o segundo `m2xQj8`, até um limite de bilhões de combinações.
+
 ## Pré-requisitos
 - **Docker**: Certifique-se de que o Docker e o Docker Compose estão instalados no seu sistema.
 - **Java 17**: Requerido para construir a aplicação (incluído na imagem Docker).

@@ -2,7 +2,6 @@ package com.company.tds.encurtador_url.domain.useCase;
 
 import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest;
 import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
-import com.company.tds.encurtador_url.controller.exception.ErroInternoException;
 import com.company.tds.encurtador_url.domain.entity.UrlEntity;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,7 +11,6 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
-import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -30,7 +28,6 @@ class CadastrarUrlUseCaseTest {
         useCase = new CadastrarUrlUseCase(repository);
 
         ReflectionTestUtils.setField(useCase, "baseUrl", "http://localhost:8080");
-        ReflectionTestUtils.setField(useCase, "algoritmo", "SHA-256");
     }
 
     @Test
@@ -52,23 +49,18 @@ class CadastrarUrlUseCaseTest {
     }
 
     @Test
-    void falharAoGerarUrlEncurtadaUnicaAposMaximoDeTentativas() {
-        String originalUrl = "https://example.com";
-        CadastrarUrlRequest request = new CadastrarUrlRequest(originalUrl);
-        when(repository.findByShortUrl(anyString())).thenReturn(Optional.of(new UrlEntity()));
-
-        assertThrows(ErroInternoException.class, () -> useCase.executar(request));
+    void deveGerarShortUrlComComprimentoCorreto() {
+        String shortUrl = useCase.gerarShortUrl();
+        assertEquals(6, shortUrl.length(), "Short URL deve ter comprimento de 6 caracteres");
     }
 
     @Test
-    void falharAoGerarHashParaUrl() {
-        ReflectionTestUtils.setField(useCase, "algoritmo", "none");
-
-        String originalUrl = "https://example.com";
-        CadastrarUrlRequest request = new CadastrarUrlRequest(originalUrl);
-        CadastrarUrlUseCase spyUseCase = spy(useCase);
-
-        assertThrows(ErroInternoException.class, () -> spyUseCase.executar(request));
+    void deveGerarShortUrlComValorZero() {
+        String shortUrl = useCase.encodeToBase62WithRandomness(0, 6);
+        assertEquals(6, shortUrl.length(), "Short URL deve ter comprimento de 6 caracteres");
+        for (char c : shortUrl.toCharArray()) {
+            assertTrue(CadastrarUrlUseCase.BASE62_CHARS.indexOf(c) >= 0, "Caracter deve estar dentro do conjunto BASE62");
+        }
     }
 
     @Test

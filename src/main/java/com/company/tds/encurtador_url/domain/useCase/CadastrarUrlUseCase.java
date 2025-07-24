@@ -2,7 +2,6 @@ package com.company.tds.encurtador_url.domain.useCase;
 
 import com.company.tds.encurtador_url.controller.dto.request.CadastrarUrlRequest;
 import com.company.tds.encurtador_url.controller.dto.response.CadastrarUrlResponse;
-import com.company.tds.encurtador_url.controller.exception.ErroInternoException;
 import com.company.tds.encurtador_url.domain.entity.UrlEntity;
 import com.company.tds.encurtador_url.domain.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,32 +11,26 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
-import java.util.Base64;
-import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class CadastrarUrlUseCase {
      private static final int SHORT_URL_LENGTH = 6;
-     private static final int MAX_ATTEMPTS = 5;
+     static final String BASE62_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 
      private final UrlRepository repository;
 
      @Value("${app.base-url:http://localhost:8080}")
      private String baseUrl;
 
-     @Value("${app.hash.algoritmo:SHA-256}")
-     private String algoritmo;
-
      @CacheEvict(value = "urlCache", key = "#result.shortUrl")
      public CadastrarUrlResponse executar(CadastrarUrlRequest request) {
           validarUrl(request.originalUrl());
 
-          String shortUrl = gerarShortUrl(request.originalUrl());
+          String shortUrl = gerarShortUrl();
           UrlEntity entity = preencherEntity(shortUrl, request.originalUrl());
 
           entity = repository.save(entity);
@@ -66,32 +59,27 @@ public class CadastrarUrlUseCase {
                   .build();
      }
 
-     private String gerarShortUrl(String originalUrl) {
-          String hashInput = originalUrl + System.currentTimeMillis();
-          String base64Hash = generateBase64Hash(hashInput);
-
-          int attempts = 0;
-          String candidateShortUrl;
-          do {
-               candidateShortUrl = base64Hash.substring(0, SHORT_URL_LENGTH - 1)
-                       .replaceAll("[+/=]", "") + new Random().nextInt(10);
-               attempts++;
-               if (attempts > MAX_ATTEMPTS) {
-                    throw new ErroInternoException("Falha ao gerar URL encurtada única após " + MAX_ATTEMPTS + " tentativas");
-               }
-          } while (repository.findByShortUrl(candidateShortUrl).isPresent());
-
-          return candidateShortUrl;
+     String gerarShortUrl() {
+          long counter = repository.count() + 1;
+          long randomSeed = ThreadLocalRandom.current().nextLong(0, Long.MAX_VALUE);
+          long combinedValue = counter ^ randomSeed;
+          return encodeToBase62WithRandomness(combinedValue, SHORT_URL_LENGTH);
      }
 
-     String generateBase64Hash(String input) {
-          try {
-               MessageDigest digest = MessageDigest.getInstance(algoritmo);
-               byte[] hash = digest.digest(input.getBytes());
-               return Base64.getUrlEncoder().encodeToString(hash);
-          } catch (NoSuchAlgorithmException e) {
-               throw new ErroInternoException("Erro ao gerar hash para a URL", e);
+     String encodeToBase62WithRandomness(long value, int length) {
+          StringBuilder shortUrl = new StringBuilder();
+          long workingValue = value;
+
+          for (int i = 0; i < length; i++) {
+               if (workingValue > 0) {
+                    shortUrl.append(BASE62_CHARS.charAt((int) (workingValue % 62)));
+                    workingValue /= 62;
+               } else {
+                    shortUrl.append(BASE62_CHARS.charAt(ThreadLocalRandom.current().nextInt(62)));
+               }
           }
+
+          return shortUrl.toString();
      }
 
      private String buildFullUrl(String shortUrl) {

@@ -69,6 +69,16 @@ class ExceptionHandlerAdviceTest {
     }
 
     @Test
+    void retornarErrorResponseParaIllegalArgumentException() {
+        IllegalArgumentException exception = new IllegalArgumentException("Argumento inválido");
+
+        ErrorResponse response = exceptionHandlerAdvice.illegalArgumentException(exception);
+
+        assertEquals(HttpStatus.BAD_REQUEST.value(), response.getStatus());
+        assertEquals("Argumento inválido", response.getMensagem());
+    }
+
+    @Test
     void retornarErrorResponseParaRecursoNaoEncontradoComMensagemPersonalizada() {
         RecursoNaoEncontradoException exception = new RecursoNaoEncontradoException("URL encurtada não encontrada");
 
