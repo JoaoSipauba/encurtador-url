@@ -89,6 +89,14 @@ docker-compose down -v
 - **Customização**:
     - Ajuste as variáveis de ambiente no `docker-compose.yml` para produção (ex.: domínio real como `https://encurtador.tds.company` e segredos).
 
+## Acessando o Swagger
+A documentação da API está disponível por meio do Swagger, que permite visualizar e testar os endpoints diretamente no navegador. Para acessá-la:
+
+1. Certifique-se de que a aplicação está rodando (execute `docker-compose up --build`).
+2. Abra o navegador e acesse o endereço: `http://localhost:8080/swagger-ui.html`.
+3. Você verá uma interface interativa com a lista de endpoints disponíveis, como criar URLs encurtadas, acessar redirecionamentos e consultar estatísticas.
+4. Use os botões "Try it out" para enviar requisições e ver as respostas em tempo real.
+
 ## Notas Adicionais
 - **Data e Horário**: A aplicação registra o `createdAt` das URLs com base no horário do sistema, usando o fuso horário GMT (atualmente 04:56 PM -03, quinta-feira, 24 de julho de 2025).
 - **Mecanismo de Cache**: O cache foi projetado para funcionar com uma única instância da aplicação. Caso haja mais de uma instância, será necessária uma implementação alternativa, como um cache distribuído (ex.: Redis), para garantir consistência entre os nós.
