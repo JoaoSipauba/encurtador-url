@@ -17,7 +17,7 @@ spring:
     lazy-initialization: false
   data:
     mongodb:
-      uri: mongodb://root:password@localhost:27017/encurtador_db?authSource=admin
+      uri: ${SPRING_DATA_MONGODB_URI:mongodb://root:password@localhost:27017/encurtador_db?authSource=admin}
       auto-index-creation: true
 
 springdoc:
