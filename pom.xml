@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>com.company.tds</groupId>
 	<artifactId>encurtador-url</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2</version>
 	<name>encurtador-url</name>
 	<description>API backend para serviço de encurtamento de URLs - Desafio TDS Company</description>
 	<url/>
@@ -28,6 +28,7 @@
 	</scm>
 	<properties>
 		<java.version>17</java.version>
+		<resource.delimiter>@</resource.delimiter>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -36,14 +37,14 @@
 		</dependency>
 
 		<!-- DATABASE -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-mongodb</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.liquibase</groupId>
-			<artifactId>liquibase-core</artifactId>
-		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-data-mongodb</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.liquibase</groupId>-->
+<!--			<artifactId>liquibase-core</artifactId>-->
+<!--		</dependency>-->
 
 		<dependency>
 			<groupId>org.projectlombok</groupId>
