@@ -29,6 +29,9 @@ public class CadastrarUrlUseCase {
      @Value("${app.base-url:http://localhost:8080}")
      private String baseUrl;
 
+     @Value("${app.hash.algoritmo:SHA-256}")
+     private String algoritmo;
+
      @CacheEvict(value = "urlCache", key = "#result.shortUrl")
      public CadastrarUrlResponse executar(CadastrarUrlRequest request) {
           String shortUrl = gerarShortUrl(request.originalUrl());
@@ -71,9 +74,9 @@ public class CadastrarUrlUseCase {
           return candidateShortUrl;
      }
 
-     private String generateBase64Hash(String input) {
+     String generateBase64Hash(String input) {
           try {
-               MessageDigest digest = MessageDigest.getInstance("SHA-256");
+               MessageDigest digest = MessageDigest.getInstance(algoritmo);
                byte[] hash = digest.digest(input.getBytes());
                return Base64.getUrlEncoder().encodeToString(hash);
           } catch (NoSuchAlgorithmException e) {
