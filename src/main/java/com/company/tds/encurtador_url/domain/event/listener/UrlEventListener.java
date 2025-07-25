@@ -18,7 +18,7 @@ public class UrlEventListener {
     @Async
     @EventListener
     public void onUrlAccessedEvent(UrlAccessedEvent event) {
-        log.info("Processando UrlAccessedEvent: {}", event);
+        log.info("Processando UrlAccessedEvent, shortUrl: {}", event.shortUrl());
         processarUrlAcessadaUseCase.executar(event.shortUrl());
     }
 }

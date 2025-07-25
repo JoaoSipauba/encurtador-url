@@ -100,3 +100,4 @@ A documentação da API está disponível por meio do Swagger, que permite visua
 ## Notas Adicionais
 - **Data e Horário**: A aplicação registra o `createdAt` das URLs com base no horário do sistema, usando o fuso horário GMT (atualmente 04:56 PM -03, quinta-feira, 24 de julho de 2025).
 - **Mecanismo de Cache**: O cache foi projetado para funcionar com uma única instância da aplicação. Caso haja mais de uma instância, será necessária uma implementação alternativa, como um cache distribuído (ex.: Redis), para garantir consistência entre os nós.
+- **Processamento de Contador de Acessos**: O contador de acessos é processado em background utilizando `ApplicationEventPublisher` e `@EventListener`. Essa abordagem garante maior desempenho e asincronismo, permitindo que o processamento de eventos não bloqueie o fluxo principal da aplicação.
